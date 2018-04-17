@@ -1,6 +1,26 @@
 //Default Enemy speed
 let defaultEnemySpeed = 150;
+// level of difficulty will increase with progression of the game
 let levelOfDifficulty = 3;
+//added default places for player and enemy to move
+let boardPlaces = {
+    line : {
+        1: 55,
+        2: 140,
+        3: 220,
+        4: 310,
+        5: 400
+    },
+    column: {
+        1: 0,
+        2: 100,
+        3: 200,
+        4: 303,
+        5: 405
+    }
+}
+//Player has 3 lives, colliding with enemies they are decremented, when zero, the game is reset
+let lives = 3;
 // Enemies our player must avoid
 var Enemy = function(x = 0,y) {
     // Variables applied to each of our instances go here,
@@ -29,7 +49,6 @@ Enemy.prototype.update = function(dt) {
         this.x = -150;
         this.speed = Math.floor(Math.random() * levelOfDifficulty) * defaultEnemySpeed;
     }
-    
 };
 
 // Draw the enemy on the screen, required method for game
@@ -41,15 +60,18 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 
-var Player = function(x=200,y=400) {
+var Player = function() {
     this.sprite = 'images/char-boy.png';
-    this.x = x;
-    this.y = y;
+    this.x = boardPlaces.column[3];
+    this.col = 3;
+    this.y = boardPlaces.line[5];
+    this.line = 5;
 }
 
 Player.prototype.update = function() {
-    this.x = 400;
-    this.y = 200;
+    this.x = boardPlaces.column[this.col];
+    this.y = boardPlaces.line[this.line];
+    
 }
 
 Player.prototype.render = function() {
@@ -57,14 +79,28 @@ Player.prototype.render = function() {
 }
 
 Player.prototype.handleInput = function(dir) {
-
+    if(dir == "left" && this.col > 1) {
+        this.col -= 1;
+    }else if(dir == "right" && this.col < 5) {
+        this.col += 1;
+    }else if(dir == "up" && this.line > 1) {
+        this.line -= 1;
+    }else if(dir == "down" && this.line < 5) {
+        this.line += 1;
+    }
 }
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 var player = new Player();
+let allEnemies = [];
+let enemy1 = new Enemy(-180,boardPlaces.line[1]);
+let enemy2 = new Enemy(-250,boardPlaces.line[2]);
+let enemy3 = new Enemy(-120,boardPlaces.line[3]);
+allEnemies.push(enemy1, enemy2, enemy3);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -78,9 +114,3 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
-let allEnemies = [];
-let enemy1 = new Enemy(-180,230,150);
-let enemy2 = new Enemy(-250,145, 150);
-let enemy3 = new Enemy(-120,60, 200);
-allEnemies.push(enemy1, enemy2, enemy3);
