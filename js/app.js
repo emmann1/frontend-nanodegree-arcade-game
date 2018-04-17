@@ -49,6 +49,17 @@ Enemy.prototype.update = function(dt) {
         this.x = -150;
         this.speed = Math.floor(Math.random() * levelOfDifficulty) * defaultEnemySpeed;
     }
+    //Detect collisions
+    if(this.y == player.y && (this.x >= player.x-60 && this.x <= player.x+80)){
+        //Reset player position
+        player.col = 3;
+        player.line = 5;
+        lives -= 1;
+    }
+    if(lives == 0){
+        alert("Game Over");
+        location.reload();
+    }
 };
 
 // Draw the enemy on the screen, required method for game
