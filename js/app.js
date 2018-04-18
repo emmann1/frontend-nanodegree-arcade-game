@@ -19,6 +19,26 @@ let boardPlaces = {
         5: 405
     }
 }
+let occupiedPositions = [];
+let allEnemies = [];
+let obstacles = [];
+
+let checkBoard = function() {
+    obstacles.forEach(rock => {
+        if(rock.line == this.line && rock.col == this.col){
+            this.col = getRandomCol();
+            this.line = getRandomLine();
+        }
+    });
+}
+
+function getRandomCol() {
+    return Math.floor(Math.random() * 5) + 1;
+}
+
+function getRandomLine() {
+    return Math.floor(Math.random() * 3) + 1;
+}
 //Player has 3 lives, colliding with enemies they are decremented, when zero, the game is reset
 let lives = 3;
 // Enemies our player must avoid
@@ -84,7 +104,10 @@ Player.prototype.update = function() {
     this.y = boardPlaces.line[this.line];
     if(this.line == gem.line && this.col == gem.col){
         console.log("Gem Got");
+        gem.line = 0;
+        gem.col = 0;
         player.score += gem.sprite == 'images/Gem Blue.png' ? 800 : gem.sprite == 'images/Gem Green.png' ? 1000 : gem.sprite == 'images/Gem Orange.png' ? 1200 : 0;
+        console.log(this.score);
     }
 }
 
@@ -102,12 +125,17 @@ Player.prototype.handleInput = function(dir) {
         this.col -= 1;
     }else if(dir == "right" && this.col < 5) {
         this.col += 1;
-    }else if(dir == "up" && this.line > 1) {
+    }else if(dir == "up" && this.line >= 1) {
         this.line -= 1;
     }else if(dir == "down" && this.line < 5) {
         this.line += 1;
-    }else if(this.line == 1){
+    } 
+    if(this.line == 0) {
         this.win();
+        obstacles.forEach(function(r) {
+            r.change();
+        });
+        gem.change();
     }
 }
 
@@ -116,29 +144,55 @@ Player.prototype.win = function() {
     console.log("Win");
 }
 
-var Collectible = function(line, col) {
-    this.sprite = 'images/Gem Orange.png'
-    this.col = col;
-    this.line = line;
+var Collectible = function() {
+    this.sprite = 'images/Gem Orange.png';
+    this.col = getRandomCol();
+    this.line = getRandomLine();
+    checkBoard.call(this);
 }
 
 Collectible.prototype.change = function() {
-    let randomLine = Math.floor(Math.random() * 3) + 1;
-    let randomCol = Math.floor(Math.random() * 5) + 1;
+    let randomLine = getRandomLine();
+    let randomCol = getRandomCol();
     let randomColor = Math.floor(Math.random() * 3);
-    let gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png']
+    let gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png'];
     this.line = randomLine;
     this.col = randomCol;
     this.sprite = gemColor[randomColor];
+    checkBoard.call(this);
 }
 
 Collectible.prototype.update = function() {
-    this.x = boardPlaces.column[this.col] + 25;
-    this.y = boardPlaces.line[this.line] + 20;
+    this.x = boardPlaces.column[this.col] + 20;
+    this.y = boardPlaces.line[this.line] + 40;
 }
 
 Collectible.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60,110);
+}
+
+var Obstacle = function() {
+    this.sprite = 'images/Rock.png';
+    this.col = getRandomCol();
+    this.line = getRandomLine();
+    checkBoard.call(this);
+}
+
+Obstacle.prototype.update = function() {
+    this.x = boardPlaces.column[this.col];
+    this.y = boardPlaces.line[this.line];
+}
+
+Obstacle.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+Obstacle.prototype.change = function() {
+    let randomLine = getRandomLine();
+    let randomCol = getRandomCol();
+    this.line = randomLine;
+    this.col = randomCol;
+    checkBoard.call(this);
 }
 
 
@@ -147,13 +201,18 @@ Collectible.prototype.render = function() {
 // Place the player object in a variable called player
 
 var player = new Player();
-let allEnemies = [];
 let enemy1 = new Enemy(-180,boardPlaces.line[1]);
 let enemy2 = new Enemy(-250,boardPlaces.line[2]);
 let enemy3 = new Enemy(-120,boardPlaces.line[3]);
 allEnemies.push(enemy1, enemy2, enemy3);
-let gem = new Collectible(3,5);
-gem.change();
+let rock = new Obstacle();
+let rock1 = new Obstacle();
+let rock2 = new Obstacle();
+let rock3 = new Obstacle();
+obstacles.push(rock, rock1, rock2, rock3);
+let gem = new Collectible();
+
+
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
