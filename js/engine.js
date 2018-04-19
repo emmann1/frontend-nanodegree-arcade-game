@@ -55,7 +55,7 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+        win.requestAnimationFrame(main); 
     }
 
     /* This function does some initial setup that should only occur once,
@@ -97,7 +97,7 @@ var Engine = (function(global) {
         gem.update();
         obstacles.forEach(function(rock) {
             rock.update();
-        })
+        });
     }
 
     /* This function initially draws the "game level", it will then call

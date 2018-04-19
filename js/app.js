@@ -20,10 +20,10 @@ let boardPlaces = {
         5: 405
     }
 }
-let occupiedPositions = new Set();
+let occupiedPositions = [];
 let allEnemies = [];
 let obstacles = [];
-
+let currentLevel = 1;
 let checkBoard = function() {
     let target = this; 
     occupiedPositions.forEach(function checkElements(el) {
@@ -35,7 +35,7 @@ let checkBoard = function() {
         }
     });
     console.log(target.line, target.col);
-    occupiedPositions.add({line: this.line, col: this.col});
+    occupiedPositions.push({line: this.line, col: this.col});
 }
 
 function getRandomCol() {
@@ -45,8 +45,6 @@ function getRandomCol() {
 function getRandomLine() {
     return Math.floor(Math.random() * 3) + 1;
 }
-//Player has 3 lives, colliding with enemies they are decremented, when zero, the game is reset
-let lives = 3;
 // Enemies our player must avoid
 var Enemy = function(x = 0,y) {
     // Variables applied to each of our instances go here,
@@ -79,9 +77,9 @@ Enemy.prototype.update = function(dt) {
     if(this.y == player.y && (this.x >= player.x-60 && this.x <= player.x+80)){
         //Reset player position
         player.reset();
-        lives -= 1;
+        player.lives -= 1;
     }
-    if(lives == 0){
+    if(player.lives == 0){
         alert("Game Over");
         location.reload();
     }
@@ -103,6 +101,7 @@ var Player = function() {
     this.y = boardPlaces.line[5];
     this.line = 5;
     this.score = 0;
+    this.lives = 3;
 }
 
 Player.prototype.update = function() {
@@ -112,7 +111,8 @@ Player.prototype.update = function() {
         console.log("Gem Got");
         gem.line = 0;
         gem.col = 0;
-        player.score += gem.sprite == 'images/Gem Blue.png' ? 800 : gem.sprite == 'images/Gem Green.png' ? 1000 : gem.sprite == 'images/Gem Orange.png' ? 1200 : 0;
+        this.score += gem.sprite == 'images/Gem Blue.png' ? 500 : gem.sprite == 'images/Gem Green.png' ? 600 : gem.sprite == 'images/Gem Orange.png' ? 700 : gem.sprite == 'images/Heart.png' && this.lives == 3 ? 300 : 0;
+        this.lives += gem.sprite == 'images/Heart.png' && this.lives < 3 ? 1 : 0;
         console.log(this.score);
     }
 }
@@ -124,17 +124,43 @@ Player.prototype.reset = function() {
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.font = "20px Arial";
+    ctx.fillText("Lives: "+ this.lives,10,30);
+    ctx.fillText("Score: "+ this.score,380,30);
+    ctx.fillText("Level "+ currentLevel,220,30);
+    
 }
 
 Player.prototype.handleInput = function(dir) {
+    let target = this;
     if(dir == "left" && this.col > 1) {
-        this.col -= 1;
+        this.col --;
+        obstacles.forEach(function(el) {
+            if(el.col == target.col && el.line == target.line){
+                target.col ++;
+            }
+        });
     }else if(dir == "right" && this.col < 5) {
-        this.col += 1;
+        this.col ++;
+        obstacles.forEach(function(el) {
+            if(el.col == target.col && el.line == target.line){
+                target.col --;
+            }
+        });
     }else if(dir == "up" && this.line >= 1) {
-        this.line -= 1;
+        this.line --;
+        obstacles.forEach(function(el) {
+            if(el.col == target.col && el.line == target.line){
+                target.line ++;
+            }
+        });
     }else if(dir == "down" && this.line < 5) {
-        this.line += 1;
+        this.line ++;
+        obstacles.forEach(function(el) {
+            if(el.col == target.col && el.line == target.line){
+                target.line --;
+            }
+        });
     } 
     if(this.line == 0) {
         this.win();
@@ -147,6 +173,8 @@ Player.prototype.handleInput = function(dir) {
 
 Player.prototype.win = function() {
     this.reset();
+    this.score += 1000;
+    currentLevel ++;
     console.log("Win");
 }
 
@@ -155,11 +183,18 @@ var Collectible = function() {
 }
 
 Collectible.prototype.change = function() {
-    let randomColor = Math.floor(Math.random() * 3);
-    let gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png'];
+    let randomColor = Math.floor(Math.random() * 6);
+    let gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png', 'images/Heart.png'];
     this.line = getRandomLine();
     this.col = getRandomCol();
-    this.sprite = gemColor[randomColor];
+    if(randomColor > 3){
+        this.line = -1;
+        this.col = -1;
+        this.sprite = gemColor[0];
+    }else {
+        console.log(randomColor);
+        this.sprite = gemColor[randomColor];
+    }
     checkBoard.call(this);
 }
 
@@ -202,10 +237,7 @@ let enemy1 = new Enemy(-180,boardPlaces.line[1]);
 let enemy2 = new Enemy(-250,boardPlaces.line[2]);
 let enemy3 = new Enemy(-120,boardPlaces.line[3]);
 allEnemies.push(enemy1, enemy2, enemy3);
-let rock = new Obstacle();
-let rock1 = new Obstacle();
-let rock2 = new Obstacle();
-obstacles.push(rock, rock1, rock2);
+obstacles.push();
 let gem = new Collectible();
 
 
