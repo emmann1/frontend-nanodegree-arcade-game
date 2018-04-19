@@ -35,19 +35,19 @@ let checkBoard = function() {
     });
     occupiedPositions.push({line: this.line, col: this.col});
 }
-
+//get a random col in the action area(stone blocks)
 function getRandomCol() {
     return Math.floor(Math.random() * 5) + 1;
 }
-
+//get a rondom line in the action area(stone blocks)
 function getRandomLine() {
     return Math.floor(Math.random() * 3) + 1;
 }
-
+// create an obsatcle
 function createObstacle() {
     return new Obstacle();
 }
-
+// create an enemy
 function createEnemy() {
     randomStartingPoint = -Math.floor(Math.random() * 3 ) * 50;
     randomLine = Math.floor(Math.random() * 3 ) +1;
@@ -87,6 +87,7 @@ Enemy.prototype.update = function(dt) {
         player.reset();
         player.lives -= 1;
     }
+    //outputs a game over when playes has no more lives
     if(player.lives == 0){
         alert("Game Over");
         location.reload();
@@ -113,15 +114,15 @@ var Player = function() {
 Player.prototype.update = function() {
     this.x = boardPlaces.column[this.col];
     this.y = boardPlaces.line[this.line];
+    // Action for when the gem is collected
     if(this.line == gem.line && this.col == gem.col){
-        console.log("Gem Got");
         gem.line = -1;
         gem.col = -1;
         this.score += gem.sprite == 'images/Gem Blue.png' ? 50 : gem.sprite == 'images/Gem Green.png' ? 60 : gem.sprite == 'images/Gem Orange.png' ? 70 : gem.sprite == 'images/Heart.png' && this.lives == 3 ? 30 : 0;
         this.lives += gem.sprite == 'images/Heart.png' && this.lives < 3 ? 1 : 0;
     }
 }
-
+// Reset the player position
 Player.prototype.reset = function() {
     player.col = 3;
     player.line = 5;
@@ -130,6 +131,7 @@ Player.prototype.reset = function() {
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     ctx.font = "20px Arial";
+    // Add text for lives, level and score
     ctx.fillText("Lives: "+ this.lives,10,30);
     ctx.fillText("Score: "+ this.score,380,30);
     ctx.fillText("Level "+ currentLevel,220,30);
@@ -179,9 +181,10 @@ Player.prototype.handleInput = function(dir) {
 Player.prototype.win = function() {
     this.score += 100;
     currentLevel ++;
-    if(currentLevel % 20 == 0){
+    if(currentLevel % 20 == 0 && allEnemies.length < 10){
         if(defaultEnemySpeed <= 200){
             defaultEnemySpeed += 25;
+            allEnemies.push(createEnemy());
         }
     }
     if(currentLevel % 40 == 0){
@@ -190,9 +193,8 @@ Player.prototype.win = function() {
         }
     }
     if(currentLevel % 15 == 0){
-        if(obstacles.length < 3 && allEnemies.length < 10){
+        if(obstacles.length < 3 ){
             obstacles.push(createObstacle());
-            allEnemies.push(createEnemy());
         }
     }
     this.reset();
