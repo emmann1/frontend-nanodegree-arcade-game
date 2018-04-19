@@ -1,3 +1,4 @@
+
 //Default Enemy speed
 let defaultEnemySpeed = 150;
 // level of difficulty will increase with progression of the game
@@ -19,17 +20,22 @@ let boardPlaces = {
         5: 405
     }
 }
-let occupiedPositions = [];
+let occupiedPositions = new Set();
 let allEnemies = [];
 let obstacles = [];
 
 let checkBoard = function() {
-    obstacles.forEach(rock => {
-        if(rock.line == this.line && rock.col == this.col){
-            this.col = getRandomCol();
-            this.line = getRandomLine();
+    let target = this; 
+    occupiedPositions.forEach(function checkElements(el) {
+        while(target.line == el.line && target.col == el.col){
+            target.line = getRandomLine();
+            target.col = getRandomCol();
+            checkElements(el);
+            console.log(target.line, target.col);
         }
     });
+    console.log(target.line, target.col);
+    occupiedPositions.add({line: this.line, col: this.col});
 }
 
 function getRandomCol() {
@@ -145,19 +151,14 @@ Player.prototype.win = function() {
 }
 
 var Collectible = function() {
-    this.sprite = 'images/Gem Orange.png';
-    this.col = getRandomCol();
-    this.line = getRandomLine();
-    checkBoard.call(this);
+    this.change();
 }
 
 Collectible.prototype.change = function() {
-    let randomLine = getRandomLine();
-    let randomCol = getRandomCol();
     let randomColor = Math.floor(Math.random() * 3);
     let gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png'];
-    this.line = randomLine;
-    this.col = randomCol;
+    this.line = getRandomLine();
+    this.col = getRandomCol();
     this.sprite = gemColor[randomColor];
     checkBoard.call(this);
 }
@@ -173,9 +174,7 @@ Collectible.prototype.render = function() {
 
 var Obstacle = function() {
     this.sprite = 'images/Rock.png';
-    this.col = getRandomCol();
-    this.line = getRandomLine();
-    checkBoard.call(this);
+    this.change();
 }
 
 Obstacle.prototype.update = function() {
@@ -188,10 +187,8 @@ Obstacle.prototype.render = function() {
 }
 
 Obstacle.prototype.change = function() {
-    let randomLine = getRandomLine();
-    let randomCol = getRandomCol();
-    this.line = randomLine;
-    this.col = randomCol;
+    this.line = getRandomLine();
+    this.col = getRandomCol();
     checkBoard.call(this);
 }
 
@@ -208,8 +205,7 @@ allEnemies.push(enemy1, enemy2, enemy3);
 let rock = new Obstacle();
 let rock1 = new Obstacle();
 let rock2 = new Obstacle();
-let rock3 = new Obstacle();
-obstacles.push(rock, rock1, rock2, rock3);
+obstacles.push(rock, rock1, rock2);
 let gem = new Collectible();
 
 
