@@ -1,3 +1,4 @@
+
 /* Engine.js
  * This file provides the game loop functionality (update entities and render),
  * draws the initial game board on the screen, and then calls the update and
@@ -142,7 +143,45 @@ var Engine = (function(global) {
             }
         }
 
-        renderEntities();
+        if(gameReady){
+            renderEntities();
+            displayGameInfo();
+            gameOver();
+        }
+    }
+
+    function displayGameInfo() {
+        ctx.font = "20px Arial";
+        // Add text for lives, level and score
+        for(let i =0; i <= player.lives -1 ; i++){
+            ctx.drawImage(Resources.get('images/Heart.png'), 10*3*i,10, 25, 45);
+        }
+        
+        ctx.fillText("Score: "+ player.score,380,30);
+        ctx.fillText("Level "+ currentLevel,220,30);
+    }
+
+    function gameOver() {
+        if(player.lives == 0){
+            gameOverStatus = true;
+            allEnemies = [];
+            obstacles = [];
+            ctx.fillStyle = "#00000085";
+            ctx.fillRect(0,50,550,535);
+            ctx.font = "80px Tahoma";
+            ctx.fillStyle = "crimson";
+            ctx.fillText("Game Over! ",50,120);
+            ctx.font = "35px Tahoma";
+            ctx.fillStyle = "#000";
+            ctx.fillText("Your score",175,280);
+            ctx.font = "50px Tahoma";
+            ctx.fillStyle = "crimson";
+            ctx.fillText(player.score,170,350);
+            ctx.font = "30px Tahoma";
+            ctx.fillStyle = "#000";
+            ctx.fillText("Pres Enter to restart ",125,430);         
+        }
+
     }
 
     /* This function is called by the render function and is called on each game
@@ -170,6 +209,26 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+        document.querySelector("#game-info").addEventListener("click", function(e) {
+            if(e.target.nodeName == "IMG"){
+                let spriteImages = document.querySelectorAll(".char");
+                spriteImages.forEach(function(el) {
+                    el.firstElementChild.classList.remove("selected");
+                });
+                let sprite = e.target.getAttribute("src");
+                e.target.classList.add("selected");
+                let dialog = this;
+                doc.querySelector("#start-game").addEventListener("click", function() {
+                    player.sprite = sprite;
+                    console.log(sprite);
+                    gameReady = true;
+                    dialog.style.visibility = 'hidden';
+                });
+                
+                
+                //this.style.visibility = 'hidden';
+            }
+        });
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -186,7 +245,11 @@ var Engine = (function(global) {
         'images/Gem Green.png',
         'images/Gem Orange.png',
         'images/Rock.png',
-        'images/Heart.png'
+        'images/Heart.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 

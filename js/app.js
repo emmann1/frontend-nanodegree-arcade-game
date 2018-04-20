@@ -1,8 +1,5 @@
-
 //Default Enemy speed
 let defaultEnemySpeed = 100;
-// level of difficulty will increase with progression of the game
-let levelOfDifficulty = 3;
 //added default places for player and enemy to move
 let boardPlaces = {
     line : {
@@ -24,6 +21,8 @@ let occupiedPositions = [];
 let allEnemies = [];
 let obstacles = [];
 let currentLevel = 1;
+let gameOverStatus = false;
+let gameReady = false;
 let checkBoard = function() {
     let target = this; 
     occupiedPositions.forEach(function checkElements(el) {
@@ -62,7 +61,7 @@ var Enemy = function(x = 0,y) {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
-    let speed = Math.floor(Math.random() * levelOfDifficulty) * defaultEnemySpeed;
+    let speed = Math.floor(Math.random() * 3) * defaultEnemySpeed;
     this.speed = speed == 0 ? defaultEnemySpeed : speed;
     this.y = y;
 };
@@ -79,7 +78,7 @@ Enemy.prototype.update = function(dt) {
     this.x += dt * this.speed;
     if (this.x > 550){
         this.x = -150;
-        this.speed = Math.floor(Math.random() * levelOfDifficulty) * defaultEnemySpeed;
+        this.speed = Math.floor(Math.random() * 3) * defaultEnemySpeed;
     }
     //Detect collisions
     if(this.y == player.y && (this.x >= player.x-60 && this.x <= player.x+80)){
@@ -88,10 +87,7 @@ Enemy.prototype.update = function(dt) {
         player.lives -= 1;
     }
     //outputs a game over when playes has no more lives
-    if(player.lives == 0){
-        alert("Game Over");
-        location.reload();
-    }
+    
 };
 
 // Draw the enemy on the screen, required method for game
@@ -130,11 +126,7 @@ Player.prototype.reset = function() {
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    ctx.font = "20px Arial";
-    // Add text for lives, level and score
-    ctx.fillText("Lives: "+ this.lives,10,30);
-    ctx.fillText("Score: "+ this.score,380,30);
-    ctx.fillText("Level "+ currentLevel,220,30);
+    
     
 }
 
@@ -187,18 +179,13 @@ Player.prototype.win = function() {
             allEnemies.push(createEnemy());
         }
     }
-    if(currentLevel % 40 == 0){
-        if(levelOfDifficulty <= 5){
-            levelOfDifficulty ++;
-        }
-    }
     if(currentLevel % 15 == 0){
         if(obstacles.length < 3 ){
             obstacles.push(createObstacle());
         }
     }
     this.reset();
-    console.log("Win", defaultEnemySpeed, levelOfDifficulty);
+    console.log("Win", defaultEnemySpeed);
 }
 
 var Collectible = function() {
@@ -272,6 +259,20 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+    if(!gameOverStatus){
+        player.handleInput(allowedKeys[e.keyCode]);
+    }else{
+        if(e.keyCode == 13){
+            player.score = 0;
+            player.reset();
+            player.lives = 3;
+            currentLevel = 1;
+            gem.change();
+            enemy1 = new Enemy(-180,boardPlaces.line[1]);
+            enemy2 = new Enemy(-250,boardPlaces.line[2]);
+            enemy3 = new Enemy(-120,boardPlaces.line[3]);
+            allEnemies.push(enemy1, enemy2, enemy3);
+            gameOverStatus = false;
+        }
+    }
 });
