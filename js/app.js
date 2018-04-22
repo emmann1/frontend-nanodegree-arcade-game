@@ -87,6 +87,10 @@ Enemy.prototype.update = function(dt) {
         this.x = -150;
         this.speed = Math.floor(Math.random() * 3) * enemySpeed;
     }
+    this.playerCollide();
+};
+
+Enemy.prototype.playerCollide = function() {
     //Detect collisions with the player
     if(this.y == player.y && (this.x >= player.x-70 && this.x <= player.x+80)){
         //Reset player position
@@ -110,15 +114,24 @@ const Player = function() {
     this.line = 5;
     this.score = 0;
     this.lives = 3;
+    this.resetPosition = true;
 };
 
 Player.prototype.update = function() {
-    this.x = boardPlaces.column[this.col];
-    this.y = boardPlaces.line[this.line];
+    if(this.resetPosition){
+        this.x = boardPlaces.column[this.col];
+        this.y = boardPlaces.line[this.line];
+        this.collect();
+        this.resetPosition = false;
+    }
+};
+
+Player.prototype.collect = function() {
     // Action for when the gem is collected
     if(this.line == gem.line && this.col == gem.col){
         gem.line = -1;
         gem.col = -1;
+        gem.resetPosition = true;
         this.score += gem.sprite == 'images/Gem Blue.png' ? 50 : gem.sprite == 'images/Gem Green.png' ? 60 : gem.sprite == 'images/Gem Orange.png' ? 70 : gem.sprite == 'images/Heart.png' && this.lives == 3 ? 30 : 0;
         this.lives += gem.sprite == 'images/Heart.png' && this.lives < 3 ? 1 : 0;
     }
@@ -127,6 +140,7 @@ Player.prototype.update = function() {
 Player.prototype.reset = function() {
     this.col = 3;
     this.line = 5;
+    this.resetPosition = true;
 };
 
 Player.prototype.render = function() {
@@ -197,6 +211,7 @@ Player.prototype.win = function() {
 //class for collectibles, gems and hearts
 const Collectible = function() {
     this.change();
+    this.resetPosition = true;
 };
 
 //when the level is passed the collectibles are regenerated
@@ -205,7 +220,8 @@ Collectible.prototype.change = function() {
     const gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png', 'images/Heart.png'];
     this.line = getRandomLine();
     this.col = getRandomCol();
-    checkBoard.call(this);
+    this.resetPosition = true;
+    this.checkBoard();
     if(randomColor > 3){
         this.line = -1;
         this.col = -1;
@@ -217,8 +233,11 @@ Collectible.prototype.change = function() {
 
 //update method like the one from Player and Enemy classes required for the engine
 Collectible.prototype.update = function() {
-    this.x = boardPlaces.column[this.col] + 20;
-    this.y = boardPlaces.line[this.line] + 40;
+    if(this.resetPosition){
+        this.x = boardPlaces.column[this.col] + 20;
+        this.y = boardPlaces.line[this.line] + 40;
+        this.resetPosition = false;
+    }
 };
 
 //method to render the collectible
@@ -226,16 +245,32 @@ Collectible.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60,110);
 };
 
+Collectible.prototype.checkBoard = function() {
+    const target = this;
+    occupiedPositions.forEach(function checkElements(el) {
+        while(target.line == el.line && target.col == el.col){
+            target.line = getRandomLine();
+            target.col = getRandomCol();
+            checkElements(el);
+        }
+    });
+    occupiedPositions.push({line: this.line, col: this.col});
+};
+
 //separate class fro obstacles
 const Obstacle = function() {
     this.sprite = 'images/Rock.png';
     this.change();
+    this.resetPosition = true;
 };
 
 //method to update the position of the obstacle
 Obstacle.prototype.update = function() {
-    this.x = boardPlaces.column[this.col];
-    this.y = boardPlaces.line[this.line] - 10;
+    if(this.resetPosition){
+        this.x = boardPlaces.column[this.col];
+        this.y = boardPlaces.line[this.line] - 10;
+        this.resetPosition = false;
+    }
 };
 
 //renders the obstacle
@@ -247,7 +282,20 @@ Obstacle.prototype.render = function() {
 Obstacle.prototype.change = function() {
     this.line = getRandomLine();
     this.col = getRandomCol();
-    checkBoard.call(this);
+    this.checkBoard();
+    this.resetPosition = true;
+};
+
+Obstacle.prototype.checkBoard = function() {
+    const target = this;
+    occupiedPositions.forEach(function checkElements(el) {
+        while(target.line == el.line && target.col == el.col){
+            target.line = getRandomLine();
+            target.col = getRandomCol();
+            checkElements(el);
+        }
+    });
+    occupiedPositions.push({line: this.line, col: this.col});
 };
 
 
@@ -280,6 +328,7 @@ document.addEventListener('keydown', function(e) {
     };
     //prevent the user to click the direction buttons when the game is over
     if(!gameOverStatus){
+        player.resetPosition = true;
         player.handleInput(allowedKeys[e.keyCode]);
     }else{
         //when the enter key is pressed the game will restart
