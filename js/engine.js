@@ -221,7 +221,6 @@ var Engine = (function(global) {
                 let dialog = this;
                 doc.querySelector("#start-game").addEventListener("click", function() {
                     player.sprite = sprite;
-                    console.log(sprite);
                     gameReady = true;
                     dialog.style.visibility = 'hidden';
                 });

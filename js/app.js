@@ -60,7 +60,7 @@ function createEnemy() {
     return new Enemy(randomStartingPoint, boardPlaces.line[randomLine]);
 }
 // Enemies our player must avoid
-var Enemy = function(x = 0,y) {
+const Enemy = function(x = 0,y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -104,7 +104,7 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 
-var Player = function() {
+const Player = function() {
     this.sprite = 'images/char-boy.png';
     this.col = 3;
     this.line = 5;
@@ -195,14 +195,14 @@ Player.prototype.win = function() {
 };
 
 //class for collectibles, gems and hearts
-var Collectible = function() {
+const Collectible = function() {
     this.change();
 };
 
 //when the level is passed the collectibles are regenerated
 Collectible.prototype.change = function() {
     let randomColor = Math.floor(Math.random() * 6);
-    let gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png', 'images/Heart.png'];
+    const gemColor = ['images/Gem Orange.png', 'images/Gem Blue.png', 'images/Gem Green.png', 'images/Heart.png'];
     this.line = getRandomLine();
     this.col = getRandomCol();
     checkBoard.call(this);
@@ -227,7 +227,7 @@ Collectible.prototype.render = function() {
 };
 
 //separate class fro obstacles
-var Obstacle = function() {
+const Obstacle = function() {
     this.sprite = 'images/Rock.png';
     this.change();
 };
@@ -257,9 +257,9 @@ Obstacle.prototype.change = function() {
 
 //declase the player, initial enemies and one collectible that will change its status each level
 const player = new Player();
-const enemy1 = new Enemy(-180,boardPlaces.line[1]);
-const enemy2 = new Enemy(-250,boardPlaces.line[2]);
-const enemy3 = new Enemy(-120,boardPlaces.line[3]);
+let enemy1 = new Enemy(-180,boardPlaces.line[1]);
+let enemy2 = new Enemy(-250,boardPlaces.line[2]);
+let enemy3 = new Enemy(-120,boardPlaces.line[3]);
 allEnemies.push(enemy1, enemy2, enemy3);
 const gem = new Collectible();
 
