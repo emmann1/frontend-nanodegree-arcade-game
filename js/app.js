@@ -1,7 +1,7 @@
-//Default Enemy speed
-let defaultEnemySpeed = 100;
+// The speed of the enemies, starting at 100 and incrementing as the levels go on
+let enemySpeed = 100;
 //added default places for player and enemy to move
-let boardPlaces = {
+const boardPlaces = {
     line : {
         1: 55,
         2: 140,
@@ -30,8 +30,8 @@ let gameOverStatus = false;
 //variable to to know when the user chosed the sprite and the game is ready to start
 let gameReady = false;
 //function to check if a cell is available to not have a collectible overlap an obstacle
-let checkBoard = function() {
-    let target = this;
+const checkBoard = function() {
+    const target = this;
     occupiedPositions.forEach(function checkElements(el) {
         while(target.line == el.line && target.col == el.col){
             target.line = getRandomLine();
@@ -68,8 +68,8 @@ var Enemy = function(x = 0,y) {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
-    let speed = Math.floor(Math.random() * 3) * defaultEnemySpeed;
-    this.speed = speed === 0 ? defaultEnemySpeed : speed;
+    let speed = Math.floor(Math.random() * 3) * enemySpeed;
+    this.speed = speed === 0 ? enemySpeed : speed;
     this.y = y;
 };
 
@@ -80,12 +80,12 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     if(this.speed === 0){
-        this.speed = defaultEnemySpeed;
+        this.speed = enemySpeed;
     }
     this.x += dt * this.speed;
     if (this.x > 550){
         this.x = -150;
-        this.speed = Math.floor(Math.random() * 3) * defaultEnemySpeed;
+        this.speed = Math.floor(Math.random() * 3) * enemySpeed;
     }
     //Detect collisions with the player
     if(this.y == player.y && (this.x >= player.x-70 && this.x <= player.x+80)){
@@ -180,8 +180,8 @@ Player.prototype.win = function() {
     currentLevel ++;
     //add an extra enemy and increase the speed by 25 every 20 levels
     if(currentLevel % 20 === 0 && allEnemies.length < 10){
-        if(defaultEnemySpeed <= 200){
-            defaultEnemySpeed += 25;
+        if(enemySpeed <= 200){
+            enemySpeed += 25;
             allEnemies.push(createEnemy());
         }
     }
@@ -256,12 +256,12 @@ Obstacle.prototype.change = function() {
 // Place the player object in a variable called player
 
 //declase the player, initial enemies and one collectible that will change its status each level
-var player = new Player();
-let enemy1 = new Enemy(-180,boardPlaces.line[1]);
-let enemy2 = new Enemy(-250,boardPlaces.line[2]);
-let enemy3 = new Enemy(-120,boardPlaces.line[3]);
+const player = new Player();
+const enemy1 = new Enemy(-180,boardPlaces.line[1]);
+const enemy2 = new Enemy(-250,boardPlaces.line[2]);
+const enemy3 = new Enemy(-120,boardPlaces.line[3]);
 allEnemies.push(enemy1, enemy2, enemy3);
-let gem = new Collectible();
+const gem = new Collectible();
 
 
 
