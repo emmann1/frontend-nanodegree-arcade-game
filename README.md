@@ -15,3 +15,9 @@ Sometimes, randomly a gem or an extra heart will apear on the board. The rate is
 Select a favorite character as the player. Then press Start Game. You ca use either arrow buttons or W A S D for movement.  
 Collect gems to gain points. Based on the color they will give different number of points(orange = 70, green = 60, blue = 50). Reching the top(water) will advance a level and gain you 100 points.  
 Colliding with and enemy(bug) will loose you a life. When you run out of lives the game ends. Be sure to collect more lifes. You can restart a game by pressing Enter.
+
+## How to load the game locally
+To run the game locally you can make a clone to this repository or download as a zip. Then either make a [simple http local server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server) or just open the `index.html` file in your favorite browser and have javascript enabled.
+
+## Assets and ownership
+Assets and images were provided by Udacity and are their respective property. 
