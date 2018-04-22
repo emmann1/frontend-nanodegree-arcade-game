@@ -223,7 +223,7 @@ var Obstacle = function() {
 
 Obstacle.prototype.update = function() {
     this.x = boardPlaces.column[this.col];
-    this.y = boardPlaces.line[this.line];
+    this.y = boardPlaces.line[this.line] - 10;
 }
 
 Obstacle.prototype.render = function() {
@@ -252,12 +252,16 @@ let gem = new Collectible();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keydown', function(e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        65: 'left',
+        87: 'up',
+        68: 'right',
+        83: 'down'
     };
     if(!gameOverStatus){
         player.handleInput(allowedKeys[e.keyCode]);

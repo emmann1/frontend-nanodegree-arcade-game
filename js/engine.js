@@ -154,7 +154,7 @@ var Engine = (function(global) {
         ctx.font = "20px Arial";
         // Add text for lives, level and score
         for(let i =0; i <= player.lives -1 ; i++){
-            ctx.drawImage(Resources.get('images/Heart.png'), 10*3*i,10, 25, 45);
+            ctx.drawImage(Resources.get('images/Heart.png'), 10*3*i,0, 25, 45);
         }
         
         ctx.fillText("Score: "+ player.score,380,30);
