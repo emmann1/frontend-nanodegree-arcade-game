@@ -81,7 +81,7 @@ Enemy.prototype.update = function(dt) {
         this.speed = Math.floor(Math.random() * 3) * defaultEnemySpeed;
     }
     //Detect collisions
-    if(this.y == player.y && (this.x >= player.x-60 && this.x <= player.x+80)){
+    if(this.y == player.y && (this.x >= player.x-70 && this.x <= player.x+80)){
         //Reset player position
         player.reset();
         player.lives -= 1;
