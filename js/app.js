@@ -16,7 +16,7 @@ let boardPlaces = {
         4: 303,
         5: 405
     }
-}
+};
 //array containing previous occupied cells by an obstacle or collectible
 let occupiedPositions = [];
 //array to hold all enemies present on the board
@@ -31,7 +31,7 @@ let gameOverStatus = false;
 let gameReady = false;
 //function to check if a cell is available to not have a collectible overlap an obstacle
 let checkBoard = function() {
-    let target = this; 
+    let target = this;
     occupiedPositions.forEach(function checkElements(el) {
         while(target.line == el.line && target.col == el.col){
             target.line = getRandomLine();
@@ -40,7 +40,7 @@ let checkBoard = function() {
         }
     });
     occupiedPositions.push({line: this.line, col: this.col});
-}
+};
 //get a random col in the action area(stone blocks)
 function getRandomCol() {
     return Math.floor(Math.random() * 5) + 1;
@@ -69,7 +69,7 @@ var Enemy = function(x = 0,y) {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
     let speed = Math.floor(Math.random() * 3) * defaultEnemySpeed;
-    this.speed = speed == 0 ? defaultEnemySpeed : speed;
+    this.speed = speed === 0 ? defaultEnemySpeed : speed;
     this.y = y;
 };
 
@@ -79,7 +79,7 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    if(this.speed == 0){
+    if(this.speed === 0){
         this.speed = defaultEnemySpeed;
     }
     this.x += dt * this.speed;
@@ -110,7 +110,7 @@ var Player = function() {
     this.line = 5;
     this.score = 0;
     this.lives = 3;
-}
+};
 
 Player.prototype.update = function() {
     this.x = boardPlaces.column[this.col];
@@ -122,16 +122,16 @@ Player.prototype.update = function() {
         this.score += gem.sprite == 'images/Gem Blue.png' ? 50 : gem.sprite == 'images/Gem Green.png' ? 60 : gem.sprite == 'images/Gem Orange.png' ? 70 : gem.sprite == 'images/Heart.png' && this.lives == 3 ? 30 : 0;
         this.lives += gem.sprite == 'images/Heart.png' && this.lives < 3 ? 1 : 0;
     }
-}
+};
 // Reset the player position
 Player.prototype.reset = function() {
     this.col = 3;
     this.line = 5;
-}
+};
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 Player.prototype.handleInput = function(dir) {
     let target = this;
@@ -164,40 +164,40 @@ Player.prototype.handleInput = function(dir) {
                 target.line --;
             }
         });
-    } 
-    if(this.line == 0) {
+    }
+    if(this.line === 0) {
         this.win();
         obstacles.forEach(function(r) {
             r.change();
         });
         gem.change();
     }
-}
+};
 
 //method that is run when the player reaches the goal and the level goes on
 Player.prototype.win = function() {
     this.score += 100;
     currentLevel ++;
     //add an extra enemy and increase the speed by 25 every 20 levels
-    if(currentLevel % 20 == 0 && allEnemies.length < 10){
+    if(currentLevel % 20 === 0 && allEnemies.length < 10){
         if(defaultEnemySpeed <= 200){
             defaultEnemySpeed += 25;
             allEnemies.push(createEnemy());
         }
     }
     //add a new obstacle every 15 levels
-    if(currentLevel % 15 == 0){
+    if(currentLevel % 15 === 0){
         if(obstacles.length < 3 ){
             obstacles.push(createObstacle());
         }
     }
     this.reset();
-}
+};
 
 //class for collectibles, gems and hearts
 var Collectible = function() {
     this.change();
-}
+};
 
 //when the level is passed the collectibles are regenerated
 Collectible.prototype.change = function() {
@@ -213,42 +213,42 @@ Collectible.prototype.change = function() {
     }else {
         this.sprite = gemColor[randomColor];
     }
-}
+};
 
 //update method like the one from Player and Enemy classes required for the engine
 Collectible.prototype.update = function() {
     this.x = boardPlaces.column[this.col] + 20;
     this.y = boardPlaces.line[this.line] + 40;
-}
+};
 
 //method to render the collectible
 Collectible.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60,110);
-}
+};
 
 //separate class fro obstacles
 var Obstacle = function() {
     this.sprite = 'images/Rock.png';
     this.change();
-}
+};
 
 //method to update the position of the obstacle
 Obstacle.prototype.update = function() {
     this.x = boardPlaces.column[this.col];
     this.y = boardPlaces.line[this.line] - 10;
-}
+};
 
 //renders the obstacle
 Obstacle.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 //regenerates the obstacles when the level is passed
 Obstacle.prototype.change = function() {
     this.line = getRandomLine();
     this.col = getRandomCol();
     checkBoard.call(this);
-}
+};
 
 
 // Now instantiate your objects.
