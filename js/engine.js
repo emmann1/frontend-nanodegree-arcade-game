@@ -160,7 +160,8 @@ var Engine = (function(global) {
         ctx.fillText("Score: "+ player.score,380,30);
         ctx.fillText("Level "+ currentLevel,220,30);
     }
-
+    
+    //Draw game over stats when playes looses all lifes
     function gameOver() {
         if(player.lives == 0){
             gameOverStatus = true;
@@ -208,7 +209,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        // function to select different sprites by user
         document.querySelector("#game-info").addEventListener("click", function(e) {
             if(e.target.nodeName == "IMG"){
                 let spriteImages = document.querySelectorAll(".char");
@@ -224,9 +225,6 @@ var Engine = (function(global) {
                     gameReady = true;
                     dialog.style.visibility = 'hidden';
                 });
-                
-                
-                //this.style.visibility = 'hidden';
             }
         });
     }
