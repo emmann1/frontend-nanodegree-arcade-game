@@ -125,8 +125,8 @@ Player.prototype.update = function() {
 }
 // Reset the player position
 Player.prototype.reset = function() {
-    player.col = 3;
-    player.line = 5;
+    this.col = 3;
+    this.line = 5;
 }
 
 Player.prototype.render = function() {
