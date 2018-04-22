@@ -29,18 +29,7 @@ let currentLevel = 1;
 let gameOverStatus = false;
 //variable to to know when the user chosed the sprite and the game is ready to start
 let gameReady = false;
-//function to check if a cell is available to not have a collectible overlap an obstacle
-const checkBoard = function() {
-    const target = this;
-    occupiedPositions.forEach(function checkElements(el) {
-        while(target.line == el.line && target.col == el.col){
-            target.line = getRandomLine();
-            target.col = getRandomCol();
-            checkElements(el);
-        }
-    });
-    occupiedPositions.push({line: this.line, col: this.col});
-};
+
 //get a random col in the action area(stone blocks)
 function getRandomCol() {
     return Math.floor(Math.random() * 5) + 1;
